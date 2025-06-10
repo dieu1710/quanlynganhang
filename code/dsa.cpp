@@ -3,15 +3,15 @@
 #include <string>
 #include <iomanip>
 #include <cstdio>
-#include <cstdlib>   // For rand(), srand()
+#include <cstdlib>
 #include <cstring>
 #include <conio.h>
 #include <windows.h>
-#include <ctime>     // For time()
+#include <ctime>
+#include <cctype>
 
 using namespace std;
 
-// Dinh nghia kich thuoc toi da cho cac chuoi
 #define MAX_SO_TAI_KHOAN 15
 #define MAX_TEN_KH 50
 #define MAX_EMAIL 50
@@ -21,18 +21,15 @@ using namespace std;
 #define MAX_GHI_CHU 50
 #define MAX_THOI_GIAN_STR 80
 
-// Ham tro giup de dat mau cho chu
 void SetColor(int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
 }
 
-// Ham reset ve mau mac dinh
 void ResetColor() {
-    SetColor(7); // Mac dinh trang tren nen den
+    SetColor(7);
 }
 
-// Ham tro giup de dat vi tri con tro
 void Gotoxy(int x, int y) {
     COORD coord;
     coord.X = x;
@@ -40,7 +37,6 @@ void Gotoxy(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-// Struct KhachHang da duoc cap nhat
 struct KhachHang {
     char soTaiKhoan[MAX_SO_TAI_KHOAN + 1];
     char ten[MAX_TEN_KH + 1];
@@ -59,7 +55,6 @@ struct KhachHang {
     }
 };
 
-// Struct GiaoDich da duoc cap nhat
 struct GiaoDich {
     time_t thoiGian;
     char loaiGiaoDich[MAX_LOAI_GD + 1];
@@ -78,7 +73,6 @@ struct GiaoDich {
     }
 };
 
-// Lop quan ly ngan hang
 class QuanLyNganHang {
 private:
     vector<KhachHang> danhSachKH;
@@ -159,6 +153,7 @@ public:
         if (inFile == NULL) return;
         danhSachGD.clear();
         char lineBuffer[500];
+
         while (fgets(lineBuffer, sizeof(lineBuffer), inFile) != NULL) {
             GiaoDich gd;
             long long timestamp;
@@ -198,13 +193,45 @@ public:
         fgets(newKH.email, sizeof(newKH.email), stdin);
         newKH.email[strcspn(newKH.email, "\n")] = 0;
 
-        SetColor(10); cout << "Nhap So Dien Thoai: "; ResetColor();
-        fgets(newKH.soDienThoai, sizeof(newKH.soDienThoai), stdin);
-        newKH.soDienThoai[strcspn(newKH.soDienThoai, "\n")] = 0;
+        do {
+            SetColor(10); cout << "Nhap So Dien Thoai (10 so, bat dau tu 0): "; ResetColor();
+            fgets(newKH.soDienThoai, sizeof(newKH.soDienThoai), stdin);
+            newKH.soDienThoai[strcspn(newKH.soDienThoai, "\n")] = 0;
 
-        SetColor(10); cout << "Nhap Can Cuoc Cong Dan (CCCD): "; ResetColor();
-        fgets(newKH.canCuocCongDan, sizeof(newKH.canCuocCongDan), stdin);
-        newKH.canCuocCongDan[strcspn(newKH.canCuocCongDan, "\n")] = 0;
+            if (strlen(newKH.soDienThoai) == 10 && newKH.soDienThoai[0] == '0') {
+                bool is_digit = true;
+                for (int i = 0; i < strlen(newKH.soDienThoai); ++i) {
+                    if (!isdigit(newKH.soDienThoai[i])) {
+                        is_digit = false;
+                        break;
+                    }
+                }
+                if (is_digit) {
+                    break;
+                }
+            }
+            SetColor(12); cout << "So dien thoai khong hop le. Vui long nhap 10 chu so va bat dau bang '0'.\n"; ResetColor();
+        } while (true);
+
+        do {
+            SetColor(10); cout << "Nhap Can Cuoc Cong Dan (CCCD - 12 so): "; ResetColor();
+            fgets(newKH.canCuocCongDan, sizeof(newKH.canCuocCongDan), stdin);
+            newKH.canCuocCongDan[strcspn(newKH.canCuocCongDan, "\n")] = 0;
+
+            if (strlen(newKH.canCuocCongDan) == 12) {
+                bool is_digit = true;
+                for (int i = 0; i < strlen(newKH.canCuocCongDan); ++i) {
+                    if (!isdigit(newKH.canCuocCongDan[i])) {
+                        is_digit = false;
+                        break;
+                    }
+                }
+                if (is_digit) {
+                    break;
+                }
+            }
+            SetColor(12); cout << "So Can Cuoc Cong Dan khong hop le. Vui long nhap 12 chu so.\n"; ResetColor();
+        } while (true);
 
         SetColor(10); cout << "Nhap so du ban dau: "; ResetColor();
         while (scanf("%lf", &newKH.soDu) != 1 || newKH.soDu < 0) {
@@ -235,12 +262,12 @@ public:
                 cout << "\nThong tin khach hang:\n";
                 cout << "----------------------------------------\n";
                 ResetColor();
-                cout << "So tai khoan      : " << kh.soTaiKhoan << endl;
-                cout << "Ho ten            : " << kh.ten << endl;
-                cout << "Email             : " << kh.email << endl;
-                cout << "So dien thoai     : " << kh.soDienThoai << endl;
-                cout << "CCCD              : " << kh.canCuocCongDan << endl;
-                cout << "So du             : " << fixed << setprecision(2) << kh.soDu << " VND" << endl;
+                cout << "So tai khoan        : " << kh.soTaiKhoan << endl;
+                cout << "Ho ten              : " << kh.ten << endl;
+                cout << "Email               : " << kh.email << endl;
+                cout << "So dien thoai       : " << kh.soDienThoai << endl;
+                cout << "CCCD                : " << kh.canCuocCongDan << endl;
+                cout << "So du               : " << fixed << setprecision(2) << kh.soDu << " VND" << endl;
                 SetColor(14);
                 cout << "----------------------------------------\n";
                 ResetColor();
@@ -310,15 +337,51 @@ public:
                 newEmail[strcspn(newEmail, "\n")] = 0;
                 if (strlen(newEmail) > 0) strcpy(kh.email, newEmail);
 
-                SetColor(10); cout << "So dien thoai moi [" << kh.soDienThoai << "]: "; ResetColor();
-                fgets(newSDT, sizeof(newSDT), stdin);
-                newSDT[strcspn(newSDT, "\n")] = 0;
-                if (strlen(newSDT) > 0) strcpy(kh.soDienThoai, newSDT);
+                do {
+                    SetColor(10); cout << "So dien thoai moi [" << kh.soDienThoai << "] (10 so, bat dau tu 0, de trong de giu cu): "; ResetColor();
+                    fgets(newSDT, sizeof(newSDT), stdin);
+                    newSDT[strcspn(newSDT, "\n")] = 0;
 
-                SetColor(10); cout << "CCCD moi [" << kh.canCuocCongDan << "]: "; ResetColor();
-                fgets(newCCCD, sizeof(newCCCD), stdin);
-                newCCCD[strcspn(newCCCD, "\n")] = 0;
-                if (strlen(newCCCD) > 0) strcpy(kh.canCuocCongDan, newCCCD);
+                    if (strlen(newSDT) == 0) {
+                        break;
+                    } else if (strlen(newSDT) == 10 && newSDT[0] == '0') {
+                        bool is_digit = true;
+                        for (int i = 0; i < strlen(newSDT); ++i) {
+                            if (!isdigit(newSDT[i])) {
+                                is_digit = false;
+                                break;
+                            }
+                        }
+                        if (is_digit) {
+                            strcpy(kh.soDienThoai, newSDT);
+                            break;
+                        }
+                    }
+                    SetColor(12); cout << "So dien thoai moi khong hop le. Vui long nhap 10 chu so va bat dau bang '0', hoac de trong.\n"; ResetColor();
+                } while (true);
+
+                do {
+                    SetColor(10); cout << "CCCD moi [" << kh.canCuocCongDan << "] (12 so, de trong de giu cu): "; ResetColor();
+                    fgets(newCCCD, sizeof(newCCCD), stdin);
+                    newCCCD[strcspn(newCCCD, "\n")] = 0;
+
+                    if (strlen(newCCCD) == 0) {
+                        break;
+                    } else if (strlen(newCCCD) == 12) {
+                        bool is_digit = true;
+                        for (int i = 0; i < strlen(newCCCD); ++i) {
+                            if (!isdigit(newCCCD[i])) {
+                                is_digit = false;
+                                break;
+                            }
+                        }
+                        if (is_digit) {
+                            strcpy(kh.canCuocCongDan, newCCCD);
+                            break;
+                        }
+                    }
+                    SetColor(12); cout << "So Can Cuoc Cong Dan moi khong hop le. Vui long nhap 12 chu so, hoac de trong.\n"; ResetColor();
+                } while (true);
 
                 SetColor(10); cout << "\nCap nhat thong tin thanh cong!\n"; ResetColor();
                 break;
@@ -481,7 +544,7 @@ public:
         } else {
             SetColor(12); cout << "\nSo du khong du! (" << fixed << setprecision(2) << nguon->soDu << ")!\n"; ResetColor();
         }
-        cout << "\nNhan phim bat ky de tiep tuc..."; _getch();
+        cout << "\nNhan phim bat ky de tiep tiep..."; _getch();
     }
 
     void kiemTraSoDu() const {
@@ -518,7 +581,7 @@ public:
             return;
         }
 
-        SetColor(11); cout << "\n                                    === DANH SACH KHACH HANG ===\n"; ResetColor();
+        SetColor(11); cout << "\n                                 === DANH SACH KHACH HANG ===\n"; ResetColor();
         SetColor(14);
         cout << string(125, '-') << endl;
         cout << setw(12) << left << "So TK"
@@ -577,16 +640,22 @@ public:
         cout << "\nNhan phim bat ky de tiep tuc..."; _getch();
     }
 };
-
 void hienThiMenuChinh() {
     srand(time(0));
     QuanLyNganHang ql;
 
     vector<string> menuItems = {
-        "Tao tai khoan moi", "Tim tai khoan", "Xoa tai khoan",
-        "Cap nhat thong tin tai khoan", "Rut tien", "Gui tien",
-        "Chuyen khoan", "Kiem tra so du", "Hien thi danh sach tai khoan",
-        "Hien thi lich su giao dich", "Luu & Thoat"
+        "Tao tai khoan moi",
+        "Tim tai khoan",
+        "Xoa tai khoan",
+        "Cap nhat thong tin tai khoan",
+        "Rut tien",
+        "Gui tien",
+        "Chuyen khoan",
+        "Kiem tra so du",
+        "Hien thi danh sach tai khoan",
+        "Hien thi lich su giao dich",
+        "Luu & Thoat"
     };
 
     int currentSelection = 0;
@@ -602,9 +671,11 @@ void hienThiMenuChinh() {
         for (int i = 0; i < menuItems.size(); ++i) {
             Gotoxy(25, menuStartY + i);
             if (i == currentSelection) {
-                SetColor(10); cout << ">> " << menuItems[i] << " <<";
+                SetColor(10);
+                cout << ">> " << menuItems[i] << " <<";
             } else {
-                SetColor(14); cout << "   " << menuItems[i];
+                SetColor(14);
+                cout << "    " << menuItems[i];
             }
             ResetColor();
         }
@@ -613,17 +684,17 @@ void hienThiMenuChinh() {
         if (key == 0 || key == 224) {
             key = _getch();
             switch (key) {
-                case 72: currentSelection = (currentSelection - 1 + menuItems.size()) % menuItems.size(); break; // Up
-                case 80: currentSelection = (currentSelection + 1) % menuItems.size(); break; // Down
+                case 72: currentSelection = (currentSelection - 1 + menuItems.size()) % menuItems.size(); break;
+                case 80: currentSelection = (currentSelection + 1) % menuItems.size(); break;
             }
-        } else if (key == 13) { // Enter
+        } else if (key == 13) {
             system("cls");
             if (currentSelection == menuItems.size() - 1) {
                 SetColor(10);
                 cout << "\nLuu du lieu va thoat chuong trinh...\n";
                 ResetColor();
                 Sleep(1500);
-                return; // Destructor cua ql se tu dong duoc goi de luu file
+                return;
             }
 
             switch (currentSelection) {
@@ -643,7 +714,7 @@ void hienThiMenuChinh() {
 }
 
 int main() {
-    SetConsoleOutputCP(65001); // De hien thi tieng Viet tren console
+    SetConsoleOutputCP(65001);
     SetConsoleTitle(TEXT("He Thong Quan Ly Tai Khoan Ngan Hang"));
     hienThiMenuChinh();
     return 0;
