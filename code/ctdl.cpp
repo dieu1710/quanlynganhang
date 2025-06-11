@@ -497,7 +497,7 @@ public:
             cout << "Email               : " << foundNode->data.email << "\n";
             cout << "So dien thoai       : " << foundNode->data.soDienThoai << "\n";
             cout << "CCCD                : " << foundNode->data.canCuocCongDan << "\n";
-            cout << "So du               : " << foundNode->data.soDu << " VND" << "\n";
+            cout << "So du               : " << sddd(foundNode->data.soDu) << " VND" << "\n";
             SetColor(14);
             cout << "----------------------------------------\n";
             ResetColor();
