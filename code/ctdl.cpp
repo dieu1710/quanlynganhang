@@ -525,6 +525,7 @@ public:
 
         if (khToDelete != nullptr) {
             SetColor(10); cout << "\nDa xoa tai khoan cua khach hang " << khToDelete->data.ten << " (" << khToDelete->data.soTaiKhoan << ").\n"; ResetColor();
+            SetColor(12); cout << "\nSo tien thua da duoc chuyen thanh tien mat";ResetColor();
             danhSachKH.remove(stk);
         } else {
             SetColor(12); cout << "\nKhong tim thay khach hang co so tai khoan " << stk << "\n"; ResetColor();
