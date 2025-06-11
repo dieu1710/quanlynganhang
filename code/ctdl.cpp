@@ -985,8 +985,6 @@ void hienThiMenuChinh() {
 }
 
 int main() {
-    SetConsoleOutputCP(65001);
-    SetConsoleTitle(TEXT("He Thong Quan Ly Tai Khoan Ngan Hang"));
     hienThiMenuChinh();
     return 0;
 }
